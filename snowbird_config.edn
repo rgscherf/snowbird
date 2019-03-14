@@ -1,6 +1,6 @@
-{:file-types [".cls"]
+{:file-types [:apex]
  :file-search-path "../tech-debt-measurement"
- :apex-rules "pmdrules_apex_v1.xml"}
+ :pmd-rules {:apex "pmdrules_apex_v1.xml"}}
 
 
 
