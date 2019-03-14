@@ -8,7 +8,7 @@ The snowbird sings the song he always sings
 And speaks to me of flowers
 That will bloom again in spring
 ```
--- [Loretta Lynn, *Snowbird*](https://www.youtube.com/watch?v=TnwWKhSNwdo)
+-- Loretta Lynn, [*Snowbird*](https://www.youtube.com/watch?v=TnwWKhSNwdo)
 
 ## Overview
 
