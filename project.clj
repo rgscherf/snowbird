@@ -5,5 +5,6 @@
             :url "https://www.eclipse.org/legal/epl-2.0/"}
   :dependencies [[org.clojure/clojure "1.10.0"]
                  [expound "0.7.2"]
+                 [org.clojure/core.match "0.3.0-alpha5"]
                  [org.clojure/data.csv "0.1.4"]]
   :repl-options {:init-ns snowbird.core})

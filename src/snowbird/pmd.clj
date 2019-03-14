@@ -4,10 +4,11 @@
             [clojure.string :as string]
             [clojure.data.csv :as csv]
             [clojure.java.io :as io]
+            [clojure.core.match :refer [match]]
             [snowbird.specs :as specs]
             [snowbird.utils :as utils]))
 
-(defn- pmd-path
+(defn- windows-pmd-bin
   []
   (-> "pmd/bin/pmd.bat"
       io/resource
@@ -23,16 +24,21 @@
             repeat)
        (rest csv-data)))
 
+(defn- pmd-bin-path
+  []
+  (match (System/getProperty "os.name")
+         "Mac OS X" ["pmd" "pmd"]
+         :else ["cmd" "/C" (windows-pmd-bin)]))
+
 (defn- run-cmd
   "Run the PMD binary bundled with this program."
   [path rules]
   ;; https://stackoverflow.com/questions/6734908/how-to-execute-system-commands
-  (sh "cmd"
-      "/C"
-      (pmd-path)
-      "-R" rules
-      "-f" "csv"
-      "-d" path))
+  (apply sh
+         (concat (pmd-bin-path)
+                 ["-R" rules
+                  "-f" "csv"
+                  "-d" path])))
 
 (defn- as-maps
   "Read a CSV string as a seq of maps keyed to the first row values."
