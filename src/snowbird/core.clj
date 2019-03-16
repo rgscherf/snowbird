@@ -2,6 +2,7 @@
   (:require [clojure.spec.alpha :as s]
             [expound.alpha :as expound]
             [snowbird.file-system :as fs]
+            [snowbird.cli :as cli]
             [snowbird.pmd :as pmd]))
 
 (s/check-asserts true)
@@ -23,13 +24,25 @@
         (merge (fs/base-filemap-for-filetype file-type path)
                violations)))
 
-(comment
-  (def config (fs/read-config-file))
-  (def out (pmd/run-pmd :apex config))
-  (->> out
-     pmd/violation-map*
-     (violations->merged :apex (:file-search-path config))
-     tech-debt-ratio))
+(defn analyze-filetype
+  [filetype config]
+  (->> (pmd/violation-map filetype config)
+       (violations->merged filetype (:file-search-path config))))
+
+
+(defn main-
+  [& args]
+  (let [cli-opts (cli/config-from-cli-args args)
+        file-opts (fs/read-config-file)
+        merged-opts (merge file-opts cli-opts)]
+    (reduce (fn [acc f]
+              (let [analysis (analyze-filetype f merged-opts)]
+                (println analysis)
+                (-> acc
+                    (assoc-in [f :files] analysis)
+                    (assoc-in [f :tech-debt-ratio] (tech-debt-ratio analysis)))))
+            {}
+            (:file-types merged-opts))))
 
 
 
