@@ -8,27 +8,22 @@
             [snowbird.specs :as specs]
             [snowbird.utils :as utils]))
 
-(defn- windows-pmd-bin
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; CMD LINE AND PMD PATH BOOKKEEPING
+
+(defn- windows-embedded-pmd-path
   []
   (-> "pmd/bin/pmd.bat"
       io/resource
       .getPath
       (string/replace-first "/" "")))
 
-(defn- csv-data->maps [csv-data]
-  (map zipmap
-       (->> (first csv-data) ;; First row is the header
-            (map #(string/replace % " " "-"))
-            (map string/lower-case)
-            (map keyword) ;; Drop if you want string keys instead
-            repeat)
-       (rest csv-data)))
-
 (defn- pmd-bin-path
   []
   (match (System/getProperty "os.name")
          "Mac OS X" ["pmd" "pmd"]
-         :else ["cmd" "/C" (windows-pmd-bin)]))
+         :else ["cmd" "/C" (windows-embedded-pmd-path)]))
 
 (defn- run-cmd
   "Run the PMD binary bundled with this program."
@@ -40,7 +35,22 @@
                   "-f" "csv"
                   "-d" path])))
 
-(defn- as-maps
+
+;;;;;;;;;;;;;;;;;;;;;
+;; CSV FILE WRANGLING
+
+(defn- csv-data->maps
+  "Key a seq of CSV lines to the values of the first line."
+  [csv-data]
+  (map zipmap
+       (->> (first csv-data) ;; First row is the header
+            (map #(string/replace % " " "-"))
+            (map string/lower-case)
+            (map keyword) ;; Drop if you want string keys instead
+            repeat)
+       (rest csv-data)))
+
+(defn- stdin-csv->csv-maps
   "Read a CSV string as a seq of maps keyed to the first row values."
   [csv-str]
   (-> csv-str csv/read-csv csv-data->maps))
@@ -51,7 +61,11 @@
   (->> (get pmd-rules file-type)
        (run-cmd file-search-path)
        :out
-       as-maps))
+       stdin-csv->csv-maps))
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; MAKING VIOLATION SEQS INTO MAPS
 
 (defn transpose-csv-by
   "Transpose a CSV by some key. A CSV is a sequence of maps.
@@ -66,19 +80,31 @@
           {}
           input-map))
 
-(defn violation-map*
+(defn transpose-to-violation-map
   "Given a CSV (seq of violation-maps), create a map of {:file => {:violated-rule [violation-maps]}
   File names are string keys, violated rules are kw keys."
   [csv-output]
   {:post [(s/assert ::specs/violation-map %)]}
-  (let [transposed-by-file (transpose-csv-by :file csv-output :keyfn utils/name-from-path)]
+  (let [transposed-by-file (transpose-csv-by :file-name csv-output)]
     (reduce-kv (fn [m k v]
                  (assoc m k (transpose-csv-by :rule v :keyfn keyword)))
                {}
                transposed-by-file)))
 
-(defn violation-map
-  "Given a config file and filetype, run PMD for that filetype and return a seq of violation-maps."
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; RUNNING PMD AND CLEANING OUTPUT
+
+(defn violation-seq
+  "Run PMD and return a seq of spec-conforming violation maps."
   [filetype config]
-  (violation-map* (run-pmd filetype config)))
+  {:pre [#(s/assert ::specs/config config)
+         #(s/assert ::specs/filetype filetype)]
+   :post [#(s/assert (s/coll-of ::specs/violation-map) %)]}
+  (map #(-> %
+            (assoc :file-name (utils/name-from-path (:file %)))
+            (assoc :file-path (:file %))
+            (dissoc :file)
+            (dissoc :package))
+       (run-pmd filetype config)))
 

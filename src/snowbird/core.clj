@@ -29,6 +29,28 @@
   (->> (pmd/violation-map filetype config)
        (violations->merged filetype (:file-search-path config))))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; TODO: IMPLEMENT HIGH LEVEL PLAN
+(def cfg (fs/read-config-file))
+#_(def out
+    {:apex {:files-searched (fs/files-of-type :apex (:file-search-path cfg))
+            :violations (pmd/violation-seq :apex cfg)}})
+
+;; for filetype in config-filetypes...
+;; construct filetype map as above
+;; TODO: (currently missing list of rules parsed in top level map ...)
+;; then merge these into a combined map which has top level keys:
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+{:analysis-id "a UUID"
+ :date "a DATE"
+ :analysis {:analysis :maps}
+ :config-used {:copy-of :config-file}}
+
+;; then send this top-level to the config file's render method.
+;; and the database?
+
+
 
 (defn main-
   [& args]
