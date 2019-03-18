@@ -9,12 +9,29 @@
 (s/def ::file-violations (s/map-of keyword? (s/coll-of ::violation)))
 
 ;; individual violations
-(s/def ::violation (s/keys :req-un [::line ::description ::rule ::file-name ::file-path]))
+(s/def ::violation (s/keys :req-un [::line ::analysis-id ::description ::rule ::file-name ::file-path]))
 (s/def ::filetype (s/and keyword? #{:apex :js}))
 (s/def ::file-name (s/and string? #(string/includes? % ".")))
 (s/def ::file-path string?)
+(s/def ::analysis-id uuid?)
 
 ;; config stuff
 (s/def ::config (s/keys :req-un [::file-types ::file-search-path ::pmd-rules]))
 (s/def ::pmd-rules (s/map-of ::filetype string?))
 (s/def ::file-types (s/coll-of ::filetype :type vector?))
+
+;; Analysis Results
+(s/def ::analysis-result (s/keys :req-un [::analysis-time
+                                          ::id
+                                          ::config
+                                          ::analyses]))
+(s/def ::analysis-time inst?)
+(s/def ::id uuid?)
+(s/def ::analyses (s/map-of ::filetype ::filetype-analysis))
+(s/def ::filetype-analysis (s/keys :req-un
+                                   [::files-examined
+                                    ::rules
+                                    ::violations]))
+(s/def ::files-examined (s/coll-of ::file-name))
+(s/def ::rules (s/coll-of string?))
+(s/def ::violations (s/coll-of ::violation))

@@ -83,14 +83,14 @@ Essentially, an Analysis Result is a map that looks like:
 {:analysis-time #inst "1985-04-12T23:20:50.52Z"
  :id #uuid "a UUID"
  :config config-map-used
- :file-types {:first-file-type 
-                {:files-examined [file-names]
-                 :rules [qualified-rule-names]
-                 :violations [violation-records]}
-              :second-file-type
-                {:files-examined [file-names]
-                 :rules [qualified-rule-names]
-                 :violations [violation-records]}}}
+ :analyses {:first-file-type 
+             {:files-examined [file-names]
+              :rules [qualified-rule-names]
+              :violations [violation-records]}
+            :second-file-type
+             {:files-examined [file-names]
+              :rules [qualified-rule-names]
+              :violations [violation-records]}}}
 ```
 A violation record represents a single PMD or custom rule violation. A given file may have several violations, even for the same rule. Violation records look like the following:
 
