@@ -23,4 +23,5 @@
                                            (pmd/violation-seq t config))}}))}))
 
 
-(analyze (fs/read-config-file))
+(comment
+  (analyze (fs/read-config-file)))

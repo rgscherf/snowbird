@@ -52,19 +52,19 @@
 
 
 
-(defn -main
-  [& args]
-  (let [cli-opts (cli/config-from-cli-args args)
-        file-opts (fs/read-config-file)
-        merged-opts (merge file-opts cli-opts)]
-    (reduce (fn [acc f]
-              (let [analysis (analyze-filetype f merged-opts)]
-                (println analysis)
-                (-> acc
-                    (assoc-in [f :files] analysis)
-                    (assoc-in [f :tech-debt-ratio] (tech-debt-ratio analysis)))))
-            {}
-            (:file-types merged-opts))))
+#_(defn -main
+    [& args]
+    (let [cli-opts (cli/config-from-cli-args args)
+          file-opts (fs/read-config-file)
+          merged-opts (merge file-opts cli-opts)]
+      (reduce (fn [acc f]
+                (let [analysis (analyze-filetype f merged-opts)]
+                  (println analysis)
+                  (-> acc
+                      (assoc-in [f :files] analysis)
+                      (assoc-in [f :tech-debt-ratio] (tech-debt-ratio analysis)))))
+              {}
+              (:file-types merged-opts))))
 
 
 
