@@ -1,4 +1,4 @@
-(ns snowbird.cli
+(ns snowbird.input.cli
   (:require [clojure.tools.cli :as cli]
             [clojure.string :as string]))
 

@@ -1,4 +1,4 @@
-(ns snowbird.specs
+(ns snowbird.specs.core
   (:require [clojure.string :as string]
             [clojure.spec.alpha :as s]))
 

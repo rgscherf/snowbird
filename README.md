@@ -41,30 +41,32 @@ The Snowbird config file allows the user to select:
 |   Checkout branch XXX and analyze it      |
 |   Run analysis against a given directory  |
 |                                           |
-+-------------------------------------------+
++--+----------------------------------------+
    |
-   |                            snowbird.core
+   |                        snowbird.analysis
 +--v----------------------------------------+
-| Snowbird Core takes file references from  |
-| input context & produces Analysis Record: |
+| Snowbird takes file references from input |
+| context & produces Analysis Results:      |
+|                                           |
 |   * Files examined                        |
-|   * Rules Applied                         |
+|   * Rules applied                         |
 |   * Sequence of violations found          |
 |   * ... + some other metadata             |
 |                                           |
-+-------------------------------------------+
++--+----+-----------------------------------+
    |    |
    |    |
    |  +-v-----------------+
-   |  |Analysis Record DB |
+   |  |Analysis Result DB |
    |  |                   |
-   |  +-^-----------------+
+   |  +-^--+--------------+
    |    |  |
    |    |  |                  snowbird.render
-+--v-------v--------------------------------+
++--v----+--v--------------------------------+
 | Render Instructions specify               |
-| what to do with a new Analysis Record     |
+| what to do with a new Analysis Result     |
 |                                           |
+|   Calculate a technical debt ratio        |
 |   Send email notification                 |
 |   Export analysis to Google Sheet         |
 |   Determine whether to reject Git commit  |
@@ -75,27 +77,33 @@ The Snowbird config file allows the user to select:
 
 ## Data Types
 
-Essentially, an Analysis Record is a map that looks like:
+Essentially, an Analysis Result is a map that looks like:
 
 ```clojure
-{:files-examined [file-names]
- :rules [qualified-rule-names]
- :violations [violation-records]
- :time #inst "1985-04-12T23:20:50.52Z"
- :id "a UUID"}
+{:analysis-time #inst "1985-04-12T23:20:50.52Z"
+ :id #uuid "a UUID"
+ :config config-map-used
+ :file-types {:first-file-type 
+                {:files-examined [file-names]
+                 :rules [qualified-rule-names]
+                 :violations [violation-records]}
+              :second-file-type
+                {:files-examined [file-names]
+                 :rules [qualified-rule-names]
+                 :violations [violation-records]}}}
 ```
-A violation record represents a single PMD violation. A given file may have several violations, even for the same rule. Violation records look like the following:
+A violation record represents a single PMD or custom rule violation. A given file may have several violations, even for the same rule. Violation records look like the following:
 
 ```clojure 
 {:file "file-name.cls"
  :file-path "/canonical/path/to/file.cls"
- :rule "PMDnameForRule"
+ :rule "UnqualifiedRuleName"
  :line 99
  :column 10
- :analysis "analysis-id"}
+ :analysis-id #uuid "analysis id"}
 ```
 
-You can find specs for Analysis Records and Violation Records in `src/snowbird/specs.clj`. 
+You can find specs for Analysis Results and Violation Records in `src/snowbird/specs/core.clj`. 
 
 
 ## On PMD
@@ -106,13 +114,20 @@ Snowbird is based on PMD, so all the regular PMD rules are open to you. You'll s
 
 Copyright © 2019 Robert Scherf
 
-This program and the accompanying materials are made available under the
-terms of the Eclipse Public License 2.0 which is available at
-http://www.eclipse.org/legal/epl-2.0.
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
 
-This Source Code may also be made available under the following Secondary
-Licenses when the conditions for such availability set forth in the Eclipse
-Public License, v. 2.0 are satisfied: GNU General Public License as published by
-the Free Software Foundation, either version 2 of the License, or (at your
-option) any later version, with the GNU Classpath Exception which is available
-at https://www.gnu.org/software/classpath/license.html.
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.

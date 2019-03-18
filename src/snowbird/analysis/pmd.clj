@@ -1,12 +1,12 @@
-(ns snowbird.pmd
+(ns snowbird.analysis.pmd
   (:require [clojure.java.shell :refer [sh]]
             [clojure.spec.alpha :as s]
             [clojure.string :as string]
             [clojure.data.csv :as csv]
             [clojure.java.io :as io]
             [clojure.core.match :refer [match]]
-            [snowbird.specs :as specs]
-            [snowbird.utils :as utils]))
+            [snowbird.specs.core :as specs]
+            [snowbird.utils.core :as utils]))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

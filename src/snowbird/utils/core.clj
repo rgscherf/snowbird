@@ -1,4 +1,4 @@
-(ns snowbird.utils
+(ns snowbird.utils.core
   (:require [clojure.core.match :refer [match]]
             [clojure.string :as string]))
 

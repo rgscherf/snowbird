@@ -1,10 +1,11 @@
-(ns snowbird.file-system
+(ns snowbird.input.file-system
   (:require [clojure.spec.alpha :as s]
             [clojure.string :as string]
             [clojure.java.io :as jio]
             [clojure.edn :as edn]
-            [snowbird.specs :as specs]
-            [snowbird.utils :as utils]))
+            [snowbird.specs.core :as specs]
+            [snowbird.utils.core :as utils]
+            [clojure.data.xml :as xml]))
 
 
 (defn read-config-file
@@ -42,3 +43,14 @@
     {}
     (files-of-type filetype path)))
 
+
+(defn pmd-xml->rule-names
+  [xml-path]
+  (let [in (xml/parse-str (slurp xml-path))]
+    (->> in
+         (tree-seq #(-> % :content seq)
+                   :content)
+         (filter #(= (:tag %) :rule))
+         (map #(-> % :attrs :ref))
+         (map #(string/split % #"/"))
+         (map last))))
