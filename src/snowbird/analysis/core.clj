@@ -1,8 +1,6 @@
 (ns snowbird.analysis.core
   (:require [snowbird.analysis.pmd :as pmd]
-            [snowbird.input.file-system :as fs]
-            [clojure.string :as string]
-            [clojure.data.xml :as xml])
+            [snowbird.input.file-system :as fs])
   (:import java.util.Date
            java.util.UUID))
 
