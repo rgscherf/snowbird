@@ -8,13 +8,12 @@ The snowbird sings the song he always sings
 And speaks to me of flowers
 That will bloom again in spring
 ```
--- Loretta Lynn, [*Snowbird*](https://www.youtube.com/watch?v=TnwWKhSNwdo)
+-- [Loretta Lynn](https://www.youtube.com/watch?v=TnwWKhSNwdo)
 
 ## Overview
 
 Snowbird is a command-line tool for high-level static analysis insights. It's based on the popular open-source PMD tool.
 
-Where PMD is great for low-level static analysis, Snowbird helps you track the overall health of your code base over time. Its main output is a *technical debt ratio*: the percentage of files-with-PMD-violations / total-file-in-code-base. Snowbird is strict: **any** PMD violation pushes that file into the ratio's numerator.
 
 ## Usage
 
@@ -27,7 +26,8 @@ Snowbird searches for a file named `snowbird_config.edn` in the current working 
 The Snowbird config file allows the user to select:
  
 - Input Instructions, which are functions used to gather (or retrieve) files to be analyzed and the rules to analyze them with.
-- Render Instructions, which are functions that will do specific things with the analysis provided by `bluebird.core`.
+- Render Instructions, which are functions that will do specific things with the analysis provided by `snowbird.analysis.core`.
+
 
 ## Architecture
 
@@ -66,13 +66,21 @@ The Snowbird config file allows the user to select:
 | Render Instructions specify               |
 | what to do with a new Analysis Result     |
 |                                           |
-|   Calculate a technical debt ratio        |
+|   Print a technical debt ratio            |
 |   Send email notification                 |
 |   Export analysis to Google Sheet         |
 |   Determine whether to reject Git commit  |
 |                                           |
 +-------------------------------------------+
 ```
+
+## Input and Render Instructions
+
+Your config file must contain `:input` and `:render` keys, pointing to Clojure namespaces with appropriate `specify` functions. These namespaces are `require`d at runtime, and their `specify` functions called.
+
+The input `specify` takes the config map as an argument and returns a sequence of file paths to analyze.
+
+The render `specify` takes an Analysis Result as an argument and performs some side effect. 
 
 
 ## Data Types
@@ -83,14 +91,14 @@ Essentially, an Analysis Result is a map that looks like:
 {:analysis-time #inst "1985-04-12T23:20:50.52Z"
  :id #uuid "a UUID"
  :config config-map-used
- :analyses {:first-file-type 
-             {:files-examined [file-names]
-              :rules [qualified-rule-names]
-              :violations [violation-records]}
-            :second-file-type
-             {:files-examined [file-names]
-              :rules [qualified-rule-names]
-              :violations [violation-records]}}}
+ :results {:first-file-type 
+            {:files-examined [file-names]
+             :rules [qualified-rule-names]
+             :violations [violation-records]}
+           :second-file-type
+            {:files-examined [file-names]
+             :rules [qualified-rule-names]
+             :violations [violation-records]}}}
 ```
 A violation record represents a single PMD or custom rule violation. A given file may have several violations, even for the same rule. Violation records look like the following:
 
@@ -109,6 +117,7 @@ You can find specs for Analysis Results and Violation Records in `src/snowbird/s
 ## On PMD
 
 Snowbird is based on PMD, so all the regular PMD rules are open to you. You'll see space to specify ruleset XMLs in the Snowbird config file. We've bundled PMD with the Snowbird JAR so you don't have to worry about having it installed on your system.
+
 
 ## License
 

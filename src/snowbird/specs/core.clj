@@ -16,18 +16,23 @@
 (s/def ::analysis-id uuid?)
 
 ;; config stuff
-(s/def ::config (s/keys :req-un [::file-types ::file-search-path ::pmd-rules]))
+(s/def ::config (s/keys :req-un [::file-types ::pmd-rules ::input ::render]
+                        :opt-un [::input-args ::render-args]))
 (s/def ::pmd-rules (s/map-of ::filetype string?))
 (s/def ::file-types (s/coll-of ::filetype :type vector?))
+(s/def ::input symbol?)
+(s/def ::render symbol?)
+(s/def ::input-args map?)
+(s/def ::render-args map?)
 
 ;; Analysis Results
 (s/def ::analysis-result (s/keys :req-un [::analysis-time
                                           ::id
                                           ::config
-                                          ::analyses]))
+                                          ::results]))
 (s/def ::analysis-time inst?)
 (s/def ::id uuid?)
-(s/def ::analyses (s/map-of ::filetype ::filetype-analysis))
+(s/def ::results (s/map-of ::filetype ::filetype-analysis))
 (s/def ::filetype-analysis (s/keys :req-un
                                    [::files-examined
                                     ::rules

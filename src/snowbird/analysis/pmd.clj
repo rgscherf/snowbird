@@ -6,7 +6,8 @@
             [clojure.java.io :as io]
             [clojure.core.match :refer [match]]
             [snowbird.specs.core :as specs]
-            [snowbird.utils.core :as utils]))
+            [snowbird.utils.core :as utils]
+            [clojure.java.io :as jio]))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -27,14 +28,16 @@
 
 (defn- run-cmd
   "Run the PMD binary bundled with this program."
-  [path rules]
+  [file-paths rules]
   ;; https://stackoverflow.com/questions/6734908/how-to-execute-system-commands
-  (apply sh
-         (concat (pmd-bin-path)
-                 ["-R" rules
-                  "-f" "csv"
-                  "-d" path])))
-
+  (let [_ (spit "temp.txt" (string/join "," file-paths))
+        res (apply sh
+                   (concat (pmd-bin-path)
+                           ["-R" rules
+                            "-f" "csv"
+                            "-filelist" "temp.txt"]))]
+    (do (io/delete-file "temp.txt")
+        res)))
 
 ;;;;;;;;;;;;;;;;;;;;;
 ;; CSV FILE WRANGLING
@@ -57,39 +60,11 @@
 
 (defn run-pmd
   "Run PMD for a given directory and ruleset(s) "
-  [file-type {:keys [pmd-rules file-search-path]}]
+  [file-paths file-type {:keys [pmd-rules]}]
   (->> (get pmd-rules file-type)
-       (run-cmd file-search-path)
+       (run-cmd file-paths)
        :out
        stdin-csv->csv-maps))
-
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; MAKING VIOLATION SEQS INTO MAPS
-
-(defn transpose-csv-by
-  "Transpose a CSV by some key. A CSV is a sequence of maps.
-  Result is a map of transposition-key to all rows matching that key.
-  Optional arg `keyfn` will be applied to the resultant key."
-  [transposition-key input-map & {:keys [keyfn] :or {keyfn identity}}]
-  (reduce (fn [acc-map input-row]
-            (update acc-map
-                    (keyfn (get input-row transposition-key))
-                    conj
-                    input-row))
-          {}
-          input-map))
-
-(defn transpose-to-violation-map
-  "Given a CSV (seq of violation-maps), create a map of {:file => {:violated-rule [violation-maps]}
-  File names are string keys, violated rules are kw keys."
-  [csv-output]
-  {:post [(s/assert ::specs/violation-map %)]}
-  (let [transposed-by-file (transpose-csv-by :file-name csv-output)]
-    (reduce-kv (fn [m k v]
-                 (assoc m k (transpose-csv-by :rule v :keyfn keyword)))
-               {}
-               transposed-by-file)))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -97,7 +72,7 @@
 
 (defn violation-seq
   "Run PMD and return a seq of spec-conforming violation maps."
-  [filetype config]
+  [file-paths filetype config]
   {:pre [#(s/assert ::specs/config config)
          #(s/assert ::specs/filetype filetype)]
    :post [#(s/assert (s/coll-of ::specs/violation-map) %)]}
@@ -106,5 +81,5 @@
             (assoc :file-path (:file %))
             (dissoc :file)
             (dissoc :package))
-       (run-pmd filetype config)))
+       (run-pmd file-paths filetype config)))
 

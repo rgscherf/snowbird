@@ -20,7 +20,7 @@
   {:apex ".cls"
    :js ".js"})
 
-(defn files-of-type
+(defn file-paths-of-type
   [filetype atpath]
   {:pre [(s/assert ::specs/filetype filetype)]}
   (->> atpath
@@ -28,8 +28,13 @@
        file-seq
        (filter #(.isFile %))
        (filter #(string/ends-with? % (get filetype->ext filetype)))
-       (map #(.getCanonicalPath %))
-       (map utils/name-from-path)))
+       (map #(.getCanonicalPath %))))
+
+(defn file-names-of-type
+  [filetype atpath]
+  {:pre [(s/assert ::specs/filetype filetype)]}
+  (map utils/name-from-path
+       (file-paths-of-type filetype atpath)))
 
 
 (defn base-filemap-for-filetype
@@ -41,7 +46,7 @@
     (fn [acc x]
       (assoc acc x nil))
     {}
-    (files-of-type filetype path)))
+    (file-names-of-type filetype path)))
 
 
 (defn pmd-xml->rule-names
