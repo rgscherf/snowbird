@@ -17,13 +17,13 @@
 
 ;; config stuff
 (s/def ::config (s/keys :req-un [::file-types ::pmd-rules ::input ::render]
-                        :opt-un [::input-args ::render-args]))
+                        :opt-un [::input-opts ::render-opts]))
 (s/def ::pmd-rules (s/map-of ::filetype string?))
 (s/def ::file-types (s/coll-of ::filetype :type vector?))
 (s/def ::input symbol?)
 (s/def ::render symbol?)
-(s/def ::input-args map?)
-(s/def ::render-args map?)
+(s/def ::input-opts map?)
+(s/def ::render-opts map?)
 
 ;; Analysis Results
 (s/def ::analysis-result (s/keys :req-un [::analysis-time

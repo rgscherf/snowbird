@@ -6,8 +6,9 @@
 (fs/file-paths-of-type :apex (:file-search-path (fs/read-config-file)))
 
 (defn specify
+  "Search a given directory for files to analyze, indicated by the :file-search-path opts key. File search path may be relative."
   [config]
   (apply concat
     (for [ft (-> config :file-types)]
-      (fs/file-paths-of-type ft (-> config :input-args :file-search-path)))))
+      (fs/file-paths-of-type ft (-> config :input-opts :file-search-path)))))
 

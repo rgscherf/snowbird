@@ -82,6 +82,8 @@ The input `specify` takes the config map as an argument and returns a sequence o
 
 The render `specify` takes an Analysis Result as an argument and performs some side effect. 
 
+You may also supply `:input-opts` and `:render-opts` keys, if your selected `specify` fns require additional context to do their jobs.
+
 
 ## Data Types
 
