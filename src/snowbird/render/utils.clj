@@ -19,7 +19,8 @@
           input-map))
 
 (defn transpose-to-violation-map
-  "Given a CSV (seq of violation-maps), create a map of {:file => {:violated-rule [violation-maps]}
+  "Given a CSV (seq of violation-maps), create a map of
+  {:file => {:violated-rule [violation-maps]}
   File names are string keys, violated rules are kw keys."
   [csv-output]
   {:post [(s/assert ::specs/violation-map %)]}

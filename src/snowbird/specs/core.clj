@@ -9,7 +9,12 @@
 (s/def ::file-violations (s/map-of keyword? (s/coll-of ::violation)))
 
 ;; individual violations
-(s/def ::violation (s/keys :req-un [::line ::analysis-id ::description ::rule ::file-name ::file-path]))
+(s/def ::violation (s/keys :req-un [::line
+                                    ::analysis-id
+                                    ::description
+                                    ::rule
+                                    ::file-name
+                                    ::file-path]))
 (s/def ::filetype (s/and keyword? #{:apex :js}))
 (s/def ::file-name (s/and string? #(string/includes? % ".")))
 (s/def ::file-path string?)
