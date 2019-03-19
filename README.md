@@ -21,7 +21,7 @@ Basic use:
 
 `java -jar snowbird.jar`
 
-Snowbird searches for a file named `snowbird_config.edn` in the current working directory. An error will be raised if no config file is found, or if the config file can't be read. An example config file can be found at the root of this repository. Clojure specs for the config file can be found in `src/snowbird/specs.clj`.
+Snowbird searches for a file named `snowbird_config.edn` in the current working directory. An error will be raised if no config file is found, or if the config file can't be read. An example config file can be found at the root of this repository. Clojure specs for the config file can be found in `src/snowbird/specs/core.clj`.
 
 The Snowbird config file allows the user to select:
  
