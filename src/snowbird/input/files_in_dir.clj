@@ -11,5 +11,5 @@
   [config]
   (apply concat
     (for [ft (-> config :file-types)]
-      (fs/file-paths-of-type ft (-> config :input-opts :file-search-path)))))
+      (fs/file-paths-of-type ft (-> config :input :args :file-search-path)))))
 

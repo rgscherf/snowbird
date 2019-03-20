@@ -1,5 +1,6 @@
 {:file-types [:apex]
  :pmd-rules {:apex "pmdrules_apex_v1.xml"}
- :input snowbird.input.files-in-dir
- :input-args {:file-search-path "../tech-debt-measurement"}
- :render snowbird.render.print-tech-debt}
+ :input {:instruction snowbird.input.files-in-dir
+         :args {:file-search-path "../tech-debt-measurement"}}
+ :render {:instruction snowbird.render.print-tech-debt}}
+

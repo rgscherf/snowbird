@@ -9,14 +9,17 @@
 (s/check-asserts true)
 (set! s/*explain-out* expound/printer)
 
+(defn- inst
+  [specification cfg]
+  (-> cfg specification :instruction))
 
 (defn run-snowbird
   [config]
   {:pre [(s/assert ::specs/config config)]}
   (do
-    (require (:input config) (:render config))
-    (let [input-fn (ns-resolve (:input config) 'specify)
-          render-fn (ns-resolve (:render config) 'specify)
+    (require (inst :input config) (inst :render config))
+    (let [input-fn (ns-resolve (inst :input config) 'specify)
+          render-fn (ns-resolve (inst :render config) 'specify)
           result (analysis/analyze (input-fn config) config)]
       (render-fn result))))
 

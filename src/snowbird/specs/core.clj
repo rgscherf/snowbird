@@ -21,14 +21,15 @@
 (s/def ::analysis-id uuid?)
 
 ;; config stuff
-(s/def ::config (s/keys :req-un [::file-types ::pmd-rules ::input ::render]
-                        :opt-un [::input-opts ::render-opts]))
+(s/def ::config (s/keys :req-un [::file-types ::pmd-rules ::input ::render]))
 (s/def ::pmd-rules (s/map-of ::filetype string?))
 (s/def ::file-types (s/coll-of ::filetype :type vector?))
-(s/def ::input symbol?)
-(s/def ::render symbol?)
-(s/def ::input-opts map?)
-(s/def ::render-opts map?)
+(s/def ::snowbird-instruction (s/keys :req-un [::instruction]
+                                      :opt-un [::args]))
+(s/def ::input ::snowbird-instruction)
+(s/def ::render ::snowbird-instruction)
+(s/def ::instruction symbol?)
+(s/def ::args map?)
 
 ;; Analysis Results
 (s/def ::analysis-result (s/keys :req-un [::analysis-time
