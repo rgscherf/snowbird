@@ -1,4 +1,35 @@
-(ns snowbird.analysis.custom-rules.apex-filename-must-match-pattern)
+(ns snowbird.custom-rules.apex.no-dml-in-controller
+  (:require [clojure.java.io :as io]
+            [clojure.string :as string]
+            [snowbird.utils.core :as utils]))
+
+(def dml-regex #"\s+(insert|delete|upsert|update)\s+")
+(def allowed-file-pattern-regex #"(model_|test\.cls|testfactory\.cls)")
+(def rule-name "NoDmlInController")
+
+(defn- run-single
+  [file-path]
+  (with-open [f (io/reader file-path)]
+    (-> (->> (line-seq f)
+             (map (fn [n l] {:line n
+                             :file-path file-path
+                             :file-name (utils/name-from-path file-path)
+                             :rule rule-name
+                             :description (str " " (string/trim l) " ")})
+                             ;; ^^ so that we still catch DML as first token
+                  (range 15000))
+             (filter #(re-find dml-regex (:description %))))
+        doall
+        seq)))
+
+(defn run
+  [file-paths]
+  (->> file-paths
+       (remove #(re-find allowed-file-pattern-regex (string/lower-case %)))
+       (map run-single)
+       (remove nil?)
+       flatten))
+
 
 (def files
   [ "/Users/rgscherf/projects/tech-debt-measurement/classes/Class_ServiceLayerUtil_Test.cls"
@@ -35,4 +66,3 @@
    "/Users/rgscherf/projects/tech-debt-measurement/classes/Class_SMS_JSON.cls"
    "/Users/rgscherf/projects/tech-debt-measurement/classes/Controller_ContactWorkOrderDisplay.cls"
    "/Users/rgscherf/projects/tech-debt-measurement/classes/Controller_MyProfilePage.cls"])
-

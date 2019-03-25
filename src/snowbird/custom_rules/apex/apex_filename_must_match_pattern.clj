@@ -1,11 +1,4 @@
-(ns snowbird.analysis.core
-  (:require [snowbird.analysis.pmd :as pmd]
-            [snowbird.specs.core :as specs]
-            [snowbird.input.file-system :as fs]
-            [clojure.spec.alpha :as s]
-            [snowbird.utils.core :as utils])
-  (:import java.util.Date
-           java.util.UUID))
+(ns snowbird.custom-rules.apex.apex-filename-must-match-pattern)
 
 (def files
   [ "/Users/rgscherf/projects/tech-debt-measurement/classes/Class_ServiceLayerUtil_Test.cls"
@@ -42,59 +35,4 @@
    "/Users/rgscherf/projects/tech-debt-measurement/classes/Class_SMS_JSON.cls"
    "/Users/rgscherf/projects/tech-debt-measurement/classes/Controller_ContactWorkOrderDisplay.cls"
    "/Users/rgscherf/projects/tech-debt-measurement/classes/Controller_MyProfilePage.cls"])
-
-(defn resolve-rule-name
-  "Resolve rule's name from rule NS."
-  [rule-ns]
-  (-> rule-ns (ns-resolve 'rule-name) deref))
-
-
-(defn resolve-rule-fn
-  "Resolve rule's run fn from NS symbol."
-  [rule-ns]
-  (ns-resolve rule-ns 'run))
-
-
-(defn run-custom-rules
-  "Resolve rule fns from seq of rule symbols, and run them against file paths."
-  [rule-syms file-paths]
-  (flatten
-    ((apply juxt (map resolve-rule-fn rule-syms)) file-paths)))
-
-
-
-
-(defn analyze
-  [file-paths config]
-  {:pre [(s/assert (s/coll-of ::specs/file-path) file-paths)
-         (s/assert ::specs/config config)]
-   :post [(s/assert ::specs/analysis-result %)]}
-  (let [analysis-date (Date.)
-        id (UUID/randomUUID)]
-    {:analysis-time analysis-date
-     :id            id
-     :config        config
-     :results       (apply merge
-                           (for [t (:file-types config)]
-                             {t {:files-examined
-                                   (map utils/name-from-path file-paths)
-                                 :rules
-                                   (sort
-                                     (concat
-                                       (map resolve-rule-name
-                                            (-> config :custom-rules t))
-                                       (fs/pmd-xml->rule-names (-> config
-                                                                   :pmd-rules
-                                                                   t))))
-                                 :violations
-                                   (map #(assoc % :analysis-id id)
-                                        (concat
-                                          (run-custom-rules (-> config :custom-rules t)
-                                                            file-paths)
-                                          (pmd/violation-seq file-paths
-                                                             t
-                                                             config)))}}))}))
-
-(analyze files (fs/read-config-file))
-
 
