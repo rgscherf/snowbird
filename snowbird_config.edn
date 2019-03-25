@@ -1,5 +1,7 @@
 {:file-types [:apex]
- :custom-rules {:apex [snowbird.custom-rules.apex.no-dml-in-controller]}
+ :custom-rules
+   {:apex [snowbird.custom-rules.apex.apex-filename-must-match-pattern
+           snowbird.custom-rules.apex.no-dml-in-controller]}
  :pmd-rules {:apex "pmdrules_apex_v1.xml"}
  :input {:instruction snowbird.input.files-in-dir
          :args {:file-search-path "../tech-debt-measurement"}}

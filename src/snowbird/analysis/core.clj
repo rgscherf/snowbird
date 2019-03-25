@@ -62,8 +62,6 @@
     ((apply juxt (map resolve-rule-fn rule-syms)) file-paths)))
 
 
-
-
 (defn analyze
   [file-paths config]
   {:pre [(s/assert (s/coll-of ::specs/file-path) file-paths)
@@ -95,6 +93,4 @@
                                                              t
                                                              config)))}}))}))
 
-(analyze files (fs/read-config-file))
-
-
+#_(analyze files (fs/read-config-file))
