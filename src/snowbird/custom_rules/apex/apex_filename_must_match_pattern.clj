@@ -7,14 +7,18 @@
 
 (def name-patterns
   ^:private
-  [#"_test\.cls"
-   #"_longtest\.cls"
-   #"^testfactory_"
+  [#"trigger\.cls"
+   #"^triggerhandler_"
    #"^controller_"
+   #"^controllerext_"
+   #"^class_"
    #"^model_"
    #"^batch_"
-   #"^class_"
-   #"^ltgcontroller_"])
+   #"^scheduled_"
+   #"^ltgcontroller_"
+   #"^testfactory_"
+   #"_test\.cls"
+   #"_longtest\.cls"])
 
 
 (defn- name-pattern-matches
