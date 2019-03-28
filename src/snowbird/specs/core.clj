@@ -22,15 +22,15 @@
 
 ;; config stuff
 (s/def ::config (s/keys :req-un [::file-types ::pmd-rules ::input ::render]
-                        :opt-un [::whitelist]))
+                        :opt-un [::whitelist ::custom-rules]))
 (s/def ::pmd-rules (s/map-of ::filetype string?))
 (s/def ::file-types (s/coll-of ::filetype :type vector?))
 (s/def ::snowbird-instruction (s/coll-of (s/tuple symbol? map?)
                                          :kind vector))
 (s/def ::input ::snowbird-instruction)
 (s/def ::render ::snowbird-instruction)
-(s/def ::instruction symbol?)
-(s/def ::args map?)
+(s/def ::custom-rules (s/map-of ::file-type
+                                (s/coll-of symbol? :kind vector?)))
 (s/def ::whitelist (s/map-of ::filetype
                              (s/map-of string?
                                        (s/coll-of string? :kind vector?))))
