@@ -1,9 +1,14 @@
-{:file-types [:apex]
- :custom-rules
-   {:apex [snowbird.custom-rules.apex.apex-filename-must-match-pattern
-           snowbird.custom-rules.apex.no-dml-in-controller]}
- :pmd-rules {:apex "pmdrules_apex_v1.xml"}
- :input {:instruction snowbird.input.files-in-dir
-         :args {:file-search-path "../tech-debt-measurement"}}
- :render {:instruction snowbird.render.print-tech-debt}}
+{:file-types   [:apex]
+ :input        [[snowbird.input.files-in-dir {:file-search-path "../tech-debt-measurement"}]]
+ :pmd-rules    {:apex "pmdrules_apex_v1.xml"}
+ :render       [[snowbird.render.violations-log {:destination-path "./violations.txt"}]
+                [snowbird.render.print-tech-debt {}]
+                [snowbird.render.serialize-results {:destination-file "./results.edn"}]]
+ :custom-rules {:apex [snowbird.custom-rules.apex.apex-filename-must-match-pattern
+                       snowbird.custom-rules.apex.no-dml-in-controller]}
+ :whitelist    {:apex
+                {"ApexFilenameMustMatchPattern" ["ActivationRenewalBatch.cls"
+                                                 "ActivityTimelineItem.cls"
+                                                 "ChangePasswordController.cls"]}}}
+
 

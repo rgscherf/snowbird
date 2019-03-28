@@ -36,8 +36,7 @@
         {:line 00
          :description (str "Lowercase filename '"
                            (string/lower-case file-name)
-                           "' does not match any allowed pattern: "
-                           name-patterns)
+                           "' does not match any allowed pattern.")
          :rule rule-name
          :file-name file-name
          :file-path file-path})))

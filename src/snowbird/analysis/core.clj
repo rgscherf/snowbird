@@ -46,21 +46,39 @@
 (defn resolve-rule-name
   "Resolve rule's name from rule NS."
   [rule-ns]
-  (-> rule-ns (ns-resolve 'rule-name) deref))
-
-
-(defn resolve-rule-fn
-  "Resolve rule's run fn from NS symbol."
-  [rule-ns]
-  (ns-resolve rule-ns 'run))
+  @(utils/resolve-symbol 'rule-name rule-ns))
 
 
 (defn run-custom-rules
   "Resolve rule fns from seq of rule symbols, and run them against file paths."
   [rule-syms file-paths]
   (flatten
-    ((apply juxt (map resolve-rule-fn rule-syms)) file-paths)))
+    ((apply juxt
+            (map #(utils/resolve-symbol 'run %) rule-syms))
+     file-paths)))
 
+
+(defn remove-whitelisted
+  "Move through the violations seq, removing entries that match on whitelisted
+  rules and filenames."
+  [config ft violations]
+  (let [wl-rules (->> config :whitelist ft keys (into #{}))]
+    (remove (fn [violation]
+                (if (get wl-rules (:rule violation))
+                  (get (into #{} (-> config :whitelist ft (get (:rule violation))))
+                       (:file-name violation))))
+            violations)))
+
+(defn get-violations
+  [id config file-paths t]
+  (remove-whitelisted config t
+    (map #(assoc % :analysis-id id)
+         (concat
+           (run-custom-rules (-> config :custom-rules t)
+                             file-paths)
+           (pmd/violation-seq file-paths
+                              t
+                              config)))))
 
 (defn analyze
   [file-paths config]
@@ -69,28 +87,24 @@
    :post [(s/assert ::specs/analysis-result %)]}
   (let [analysis-date (Date.)
         id (UUID/randomUUID)]
-    {:analysis-time analysis-date
-     :id            id
-     :config        config
-     :results       (apply merge
-                           (for [t (:file-types config)]
-                             {t {:files-examined
-                                   (map utils/name-from-path file-paths)
-                                 :rules
-                                   (sort
-                                     (concat
-                                       (map resolve-rule-name
-                                            (-> config :custom-rules t))
-                                       (fs/pmd-xml->rule-names (-> config
-                                                                   :pmd-rules
-                                                                   t))))
-                                 :violations
-                                   (map #(assoc % :analysis-id id)
-                                        (concat
-                                          (run-custom-rules (-> config :custom-rules t)
-                                                            file-paths)
-                                          (pmd/violation-seq file-paths
-                                                             t
-                                                             config)))}}))}))
+     {:analysis-time analysis-date
+      :id            id
+      :config        config
+      :results       (apply merge
+                            (for [t (:file-types config)]
+                              {t {:files-examined
+                                    (map utils/name-from-path file-paths)
+                                  :rules
+                                    (sort
+                                      (concat
+                                        (map resolve-rule-name
+                                             (-> config :custom-rules t))
+                                        (fs/pmd-xml->rule-names (-> config
+                                                                    :pmd-rules
+                                                                    t))))
+                                  :violations
+                                    (get-violations id config file-paths t)}}))}))
+
+
 
 #_(analyze files (fs/read-config-file))

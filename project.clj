@@ -5,6 +5,8 @@
             :url "https://www.eclipse.org/legal/epl-2.0/"}
   :dependencies [[org.clojure/clojure "1.10.0"]
                  [expound "0.7.2"]
+                 [clj-http "3.9.1"]
+                 [dk.ative/docjure "1.12.0"]
                  [org.clojure/data.xml "0.0.8"]
                  [org.clojure/tools.cli "0.4.1"]
                  [org.clojure/core.match "0.3.0-alpha5"]

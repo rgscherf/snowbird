@@ -11,3 +11,13 @@
                            "Mac OS X" #"/"
                            :else #"\\"))
       last))
+
+
+(defn resolve-symbol
+  "Gets the same symbol across multiple namespaces.
+  Does not require any namespaces, but returns the named symbol
+  (will throw an exception if any ns is not found."
+  [sym namespace]
+  (do (require namespace)
+      (ns-resolve namespace sym)))
+

@@ -47,7 +47,8 @@
   (double (/ (Math/round (* d 10000)) 100)))
 
 (defn specify
-  [result]
+  [result _ render-acc]
+  (println "Accumulated render results are: " render-acc)
   (doall
     (for [ft (filetypes-in-config result)]
       (do
