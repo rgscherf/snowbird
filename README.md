@@ -1,18 +1,16 @@
 # Snowbird
 
 ```
-Beneath this snowy mantle cold and clean
-The unborn grass lies waiting
-For its coat to turn to green
-The snowbird sings the song he always sings
-And speaks to me of flowers
-That will bloom again in spring
+The breeze along the river seems to say
+That he'll only break me heart again should I decide to stay
+So little snowbird take me with you when you go
+To that land of gentle breezes where the peaceful waters flow
 ```
 -- [Loretta Lynn](https://www.youtube.com/watch?v=TnwWKhSNwdo)
 
 ## Overview
 
-Snowbird is a command-line tool for high-level static analysis insights. It's based on the popular open-source PMD tool.
+Snowbird is a highly-configurable command-line tool for high-level static analysis insights. It's based on and wraps the analysis provided by [PMD](https://pmd.github.io/latest/index.html).
 
 
 ## Usage
@@ -28,6 +26,7 @@ The Snowbird config file allows the user to select:
 - Input Instructions, which are functions used to gather (or retrieve) files to be analyzed and the rules to analyze them with.
 - Render Instructions, which are functions that will do specific things with the analysis provided by `snowbird.analysis.core`.
 
+Input and render instructions compose nicely, so you can run any number of each as a pipeline.
 
 ## Architecture
 
@@ -78,11 +77,9 @@ The Snowbird config file allows the user to select:
 
 Your config file must contain `:input` and `:render` keys, pointing to Clojure namespaces with appropriate `specify` functions. These namespaces are `require`d at runtime, and their `specify` functions called.
 
-The input `specify` takes the config map as an argument and returns a sequence of file paths to analyze.
+The input `specify` takes the config map and an options map as arguments, and returns a sequence of file paths to analyze. The return value will be `concat`ted with sequences returned from any other input functions in your input pipeline.
 
-The render `specify` takes an Analysis Result as an argument and performs some side effect. 
-
-You may also supply `:input-opts` and `:render-opts` keys, if your selected `specify` fns require additional context to do their jobs.
+The render `specify` takes as arguments an Analysis Result, an options map, and the accumulated results of previous render fns in the pipeline. Render functions return a map of interesting information, which is then merged into the accumulated render results. This allows render fns to communicate with other functions further down the pipeline.
 
 
 ## Data Types
@@ -109,7 +106,6 @@ A violation record represents a single PMD or custom rule violation. A given fil
  :file-path "/canonical/path/to/file.cls"
  :rule "UnqualifiedRuleName"
  :line 99
- :column 10
  :analysis-id #uuid "analysis id"}
 ```
 
