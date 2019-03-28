@@ -13,3 +13,6 @@ pom.xml.asc
 .idea
 *.iml
 /resources/credentials.json
+violations.txt
+results.edn
+.DS_Store
