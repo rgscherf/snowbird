@@ -29,7 +29,7 @@
                                          :kind vector))
 (s/def ::input ::snowbird-instruction)
 (s/def ::render ::snowbird-instruction)
-(s/def ::custom-rules (s/map-of ::file-type
+(s/def ::custom-rules (s/map-of ::filetype
                                 (s/coll-of symbol? :kind vector?)))
 (s/def ::whitelist (s/map-of ::filetype
                              (s/map-of string?

@@ -26,14 +26,18 @@
           {}
           (:render config)))
 
+(defn analysis-result
+  [config]
+  (analysis/analyze (run-inputs config) config))
+
 (defn run-snowbird
   [config]
   {:pre [(s/assert ::specs/config config)]}
-  (let [result (analysis/analyze (run-inputs config) config)]
-    (run-renders result config)))
+  (run-renders (analysis-result config) config))
 
 (defn -main
   [& _]
   (run-snowbird (fs/read-config-file)))
 
-#_(-main)
+(comment
+  (-main))
