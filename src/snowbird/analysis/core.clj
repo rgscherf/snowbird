@@ -93,7 +93,7 @@
       :results       (apply merge
                             (for [t (:file-types config)]
                               {t {:files-examined
-                                    (map utils/name-from-path file-paths)
+                                    (sort (map utils/name-from-path file-paths))
                                   :rules
                                     (sort
                                       (concat
