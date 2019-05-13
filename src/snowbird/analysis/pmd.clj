@@ -6,8 +6,7 @@
             [clojure.java.io :as io]
             [clojure.core.match :refer [match]]
             [snowbird.specs.core :as specs]
-            [snowbird.utils.core :as utils]
-            [clojure.java.io :as jio]))
+            [snowbird.utils.core :as utils]))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -30,14 +29,17 @@
   "Run the PMD binary bundled with this program."
   [file-paths rules]
   ;; https://stackoverflow.com/questions/6734908/how-to-execute-system-commands
-  (let [_ (spit "temp.txt" (string/join "," file-paths))
+  (let [_ (spit "./files-examined.txt" (string/join "," file-paths))
+        _ (io/copy (-> rules io/resource io/file) (io/file "./pmd-rules.xml"))
         res (apply sh
                    (concat (pmd-bin-path)
-                           ["-R" rules
+                           ["-R" "./pmd-rules.xml"
                             "-f" "csv"
-                            "-filelist" "temp.txt"]))]
-    (do (io/delete-file "temp.txt")
-        res)))
+                            "-filelist" "./files-examined.txt"]))]
+    (do
+      (io/delete-file "./files-examined.txt")
+      (io/delete-file "./pmd-rules.xml")
+      res)))
 
 ;;;;;;;;;;;;;;;;;;;;;
 ;; CSV FILE WRANGLING

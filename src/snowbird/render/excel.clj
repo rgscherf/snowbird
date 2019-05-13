@@ -78,6 +78,6 @@
   (Integer/parcc)
   (Integer/parseInt "hello")
   (def result
-    (sbird/analysis-result (fs/read-config-file)))
+    (sbird/analysis-result (fs/read-default-config)))
   (workbook-entries result))
 

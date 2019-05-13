@@ -37,7 +37,8 @@
 
 (defn -main
   [& _]
-  (run-snowbird (fs/read-config-file)))
+  (run-snowbird (fs/read-default-config)))
 
 (comment
   (-main))
+

@@ -8,12 +8,11 @@
             [clojure.data.xml :as xml]))
 
 
-(defn read-config-file
+(defn read-default-config
+  "Get the default config file from resources dir and read it to a map."
   []
   {:post [(s/assert ::specs/config %)]}
-  (let [config (-> "snowbird_config.edn" slurp edn/read-string)]
-    config))
-
+  (-> "snowbird_config.edn" jio/resource slurp edn/read-string))
 
 ;; filetypes are recorded in config as keywords.
 (def filetype->ext
@@ -51,7 +50,7 @@
 
 (defn pmd-xml->rule-names
   [xml-path]
-  (let [in (xml/parse-str (slurp xml-path))]
+  (let [in (xml/parse-str (-> xml-path jio/resource slurp))]
     (->> in
          (tree-seq #(-> % :content seq)
                    :content)

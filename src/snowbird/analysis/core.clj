@@ -107,4 +107,4 @@
 
 
 
-#_(analyze files (fs/read-config-file))
+#_(analyze files (fs/read-default-config))
