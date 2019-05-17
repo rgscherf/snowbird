@@ -27,12 +27,12 @@
 
 (defn- run-cmd
   "Run the PMD binary bundled with this program."
-  [file-paths rules]
+  [pmd-command file-paths rules]
   ;; https://stackoverflow.com/questions/6734908/how-to-execute-system-commands
   (let [_ (spit "./files-examined.txt" (string/join "," file-paths))
-        _ (io/copy (-> rules io/resource io/file) (io/file "./pmd-rules.xml"))
+        _ (spit "./pmd-rules.xml" (-> rules io/resource slurp))
         res (apply sh
-                   (concat (pmd-bin-path)
+                   (concat (string/split pmd-command #" ")
                            ["-R" "./pmd-rules.xml"
                             "-f" "csv"
                             "-filelist" "./files-examined.txt"]))]
@@ -40,6 +40,13 @@
       (io/delete-file "./files-examined.txt")
       (io/delete-file "./pmd-rules.xml")
       res)))
+
+(comment
+  (.getPath (io/resource "pmdrules_apex_v1.xml"))
+  (.getPath (io/resource "pmdrules_apex_v1.xml"))
+  (io/resource "pmdrules_apex_v1.xml")
+  (io/copy (-> "pmdrules_apex_v1.xml" io/resource io/file)
+           (io/file "./pmd-rules.xml")))
 
 ;;;;;;;;;;;;;;;;;;;;;
 ;; CSV FILE WRANGLING
@@ -62,9 +69,9 @@
 
 (defn run-pmd
   "Run PMD for a given directory and ruleset(s) "
-  [file-paths file-type {:keys [pmd-rules]}]
+  [file-paths file-type {:keys [pmd-command pmd-rules]}]
   (->> (get pmd-rules file-type)
-       (run-cmd file-paths)
+       (run-cmd pmd-command file-paths)
        :out
        stdin-csv->csv-maps))
 

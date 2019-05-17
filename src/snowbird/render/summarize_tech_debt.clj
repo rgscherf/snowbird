@@ -1,4 +1,5 @@
-(ns snowbird.render.print-tech-debt)
+(ns snowbird.render.summarize-tech-debt
+  (:require [clojure.string :as string]))
 
 (defn filetypes-in-config
   [res]
@@ -47,25 +48,22 @@
   (double (/ (Math/round (* d 10000)) 100)))
 
 (defn specify
-  [result _ render-acc]
-  (println "Accumulated render results are: " render-acc)
-  (doall
-    (for [ft (filetypes-in-config result)]
-      (do
-        (println "%% Technical debt for" (name ft) ":")
-        (println "   Files with issues:  " (count
-                                             (files-with-violations result ft)))
-        (println "   Total files:        " (count
-                                             (files-examined result ft)))
-        (println "   Debt for filetype:  " (format-debt
-                                             (tech-debt-ratio result
-                                                              ft)) "%")
-        (println ""))))
-  (do (println "%% TOTAL TECH DEBT:")
-      (println "   Files with issues:" (count
-                                         (files-with-violations result)))
-      (println "   Total files:      " (count
-                                         (files-examined result)))
-      (println "   Overall debt:     " (format-debt
-                                         (tech-debt-ratio result)) "%")))
+  [result {:keys [print]} _]
+  (let [summary (string/join "\n"
+                 (flatten
+                   [(doall
+                      (for [ft (filetypes-in-config result)]
+                        (list
+                          (str "%% Technical debt for " (name ft) ":")
+                          (str "   Files with issues:  " (count (files-with-violations result ft)))
+                          (str "   Total files:        " (count (files-examined result ft)))
+                          (str "   Debt for filetype:  " (format-debt (tech-debt-ratio result ft)) "%")
+                          (str ""))))
+                    (str "%% TOTAL TECH DEBT:")
+                    (str "   Files with issues: " (count (files-with-violations result)))
+                    (str "   Total files:       " (count (files-examined result)))
+                    (str "   Overall debt:      " (format-debt (tech-debt-ratio result)) "%")]))]
+    (if print (println summary))
+    {::debt-summary summary}))
+
 

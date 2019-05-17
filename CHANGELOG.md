@@ -1,24 +1,20 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
-## [Unreleased]
-### Changed
-- Add a new arity to `make-widget-async` to provide a different widget shape.
-
-## [0.1.1] - 2019-03-13
-### Changed
-- Documentation on how to make the widgets.
-
-### Removed
-- `make-widget-sync` - we're all async, all the time.
-
-### Fixed
-- Fixed widget maker to keep working when daylight savings switches over.
-
-## 0.1.0 - 2019-03-13
+## [0.2.12] - 2019-05.17
 ### Added
-- Files from the new template.
-- Widget maker public API - `make-widget-sync`.
+- `snowbird.render.summarize-tech-debt` ns, with options to render debt summary as string and/or print to stdout.
+### Changed
+- `snowbird.render.serialize-results` now has option (using `:as` config key) to return analysis results as data and/or spit to a file.
+### Removed
+- `snowbird.render.str-tech-debt` and `snowbird.render.print-tech-debt`
 
-[Unreleased]: https://github.com/your-name/snowbird/compare/0.1.1...HEAD
-[0.1.1]: https://github.com/your-name/snowbird/compare/0.1.0...0.1.1
+## [0.2.11] - 2019-05-16
+### Added
+- New init fn, `run-snowbird-from-json`, which takes a local snowbird_config.edn.
+### Changed
+- `run-snowbird-from-filemap` now defers to `run-snowbird-from-json`.
+
+## [0.2.10] - 2019-05-16
+### Added 
+- pmd command is now configurable with `:pmd-command` key in `snowbird_config.edn`

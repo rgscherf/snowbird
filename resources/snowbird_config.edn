@@ -1,23 +1,18 @@
 {:file-types   [:apex]
- :input        [[snowbird.input.files-in-dir {:file-search-path "../tech-debt-measurement"}]]
+ :input        [#_[snowbird.input.files-in-dir {:file-search-path "../tech-debt-measurement"}]
+                [snowbird.input.files-from-strings {:analysis-path "./analysis-tmp"}]]
  :pmd-rules    {:apex "pmdrules_apex_v1.xml"}
- :render       [[snowbird.render.violations-log {:destination-path "./violations.txt"}]
-                [snowbird.render.print-tech-debt {}]
-                [snowbird.render.excel {:destination-file "./apex_sheet.xlsx"}]
-                [snowbird.render.serialize-results {:destination-file "./results.edn"}]]
+ :pmd-command  "pmd pmd"
+ :render       [#_[snowbird.render.violations-log {:destination-path "./violations.txt"}]
+
+                [snowbird.render.serialize-results {:as [:data]
+                                                    :destination-file "./results.edn"}]
+                [snowbird.render.summarize-tech-debt {:print false}]
+                #_[snowbird.render.excel {:destination-file "./apex_sheet.xlsx"}]]
+
  :custom-rules {:apex [snowbird.custom-rules.apex.apex-filename-must-match-pattern
                        snowbird.custom-rules.apex.no-dml-in-controller]}
- :whitelist    {:apex
-                {"ApexOpenRedirect" ["Territory_SearchController.cls"]
-                 "ApexInsecureEndpoint" ["Class_CM_IWD_Callout.cls"]
-                 "ApexSOQLInjection" ["Class_CaseLEXController.cls",
-                                      "Controller_AccountContactRelationship.cls",
-                                      "Controller_CaseAssignToGroup.cls",
-                                      "Controller_SendSMSPage.cls",
-                                      "Model_AccountContact.cls",
-                                      "Model_Contact.cls",
-                                      "Scheduled_AutoCloseCases.cls",
-                                      "controller_allCloseCaseDataRules.cls"]}}}
+ :whitelist    {:apex {}}}
 
 
 

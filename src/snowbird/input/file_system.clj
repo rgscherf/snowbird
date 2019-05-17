@@ -1,7 +1,8 @@
 (ns snowbird.input.file-system
+  (:import org.apache.commons.io.FileUtils)
   (:require [clojure.spec.alpha :as s]
             [clojure.string :as string]
-            [clojure.java.io :as jio]
+            [clojure.java.io :as io]
             [clojure.edn :as edn]
             [snowbird.specs.core :as specs]
             [snowbird.utils.core :as utils]
@@ -12,7 +13,7 @@
   "Get the default config file from resources dir and read it to a map."
   []
   {:post [(s/assert ::specs/config %)]}
-  (-> "snowbird_config.edn" jio/resource slurp edn/read-string))
+  (-> "snowbird_config.edn" io/resource slurp edn/read-string))
 
 ;; filetypes are recorded in config as keywords.
 (def filetype->ext
@@ -23,7 +24,7 @@
   [filetype atpath]
   {:pre [(s/assert ::specs/filetype filetype)]}
   (->> atpath
-       jio/file
+       io/file
        file-seq
        (filter #(.isFile %))
        (filter #(string/ends-with? % (get filetype->ext filetype)))
@@ -47,10 +48,9 @@
     {}
     (file-names-of-type filetype path)))
 
-
 (defn pmd-xml->rule-names
   [xml-path]
-  (let [in (xml/parse-str (-> xml-path jio/resource slurp))]
+  (let [in (xml/parse-str (-> xml-path io/resource slurp))]
     (->> in
          (tree-seq #(-> % :content seq)
                    :content)
@@ -58,3 +58,35 @@
          (map #(-> % :attrs :ref))
          (map #(string/split % #"/"))
          (map last))))
+
+(defn make-directory
+  [name]
+  (FileUtils/forceMkdir (io/file name)))
+
+(defn remove-directory
+  [name]
+  (FileUtils/deleteDirectory (io/file name)))
+
+(defn write-files-to
+  [dirname ftype filemap]
+  (if (not (-> dirname io/file .isDirectory))
+    (make-directory dirname))
+  (doall
+    (map (fn [[fname fcontents]]
+           (let [fpath (str dirname "/" fname (filetype->ext ftype))]
+             (spit fpath fcontents)
+             fpath))
+         filemap)))
+
+(comment
+  (let [testfiles (slurp "/Users/rgscherf/projects/snowbird/tech-debt-measurement/classes/Controller_ContactWorkOrderDisplay.cls")]
+    (write-files-to "./test-dir" :apex {"Controller_ContactWorkOrderDisplay" testfiles}))
+
+  (remove-directory "./test-dir")
+  (make-directory "./test-dir")
+  (FileUtils/deleteDirectory (io/file "./test-dir"))
+  (.delete (io/file "./test-dir")))
+; Not a file:
+; jar:file:/Users/rgscherf/.m2/repository/snowbird/snowbird/0.2.0/snowbird-0.2.0.jar!/pmdrules_apex_v1.xml
+
+
