@@ -6,7 +6,6 @@
   "Get a filename from path. Filename is the last part of the path,
   including extension."
   [path]
-  (println "running-from-path on " path)
   (-> path
       (string/split (match (System/getProperty "os.name")
                            "Mac OS X" #"/"

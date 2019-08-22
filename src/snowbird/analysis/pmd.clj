@@ -29,7 +29,6 @@
   "Run the PMD binary bundled with this program."
   [pmd-command file-paths rules]
   ;; https://stackoverflow.com/questions/6734908/how-to-execute-system-commands
-  (println "~~ IN RUN-CMD ~~")
   (let [_ (spit "./files-examined.txt" (string/join "," file-paths))
         _ (spit "./pmd-rules.xml" (-> rules io/resource slurp))
         res (apply sh
@@ -87,7 +86,6 @@
           #(s/assert ::specs/filetype filetype)]
    :post [#(s/assert (s/coll-of ::specs/violation-map) %)]}
   (let [pmd-results (run-pmd file-paths filetype config)]
-    (println pmd-results)
     (map #(-> %
               (assoc :file-name (utils/name-from-path (:file %)))
               (assoc :file-path (:file %))

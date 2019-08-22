@@ -17,7 +17,6 @@
 
 (defn run-inputs
   [config]
-  (println "in run-inputs!")
   (reduce (fn [acc [f-ns opts]]
             (let [input-fn (utils/resolve-symbol 'specify f-ns)]
               (concat acc (input-fn config opts))))
@@ -26,7 +25,6 @@
 
 (defn run-renders
   [analysis-result config]
-  (println (:render config))
   (reduce (fn [acc [f-ns opts]]
             (let [render-fn (utils/resolve-symbol 'specify f-ns)]
               (merge acc (render-fn analysis-result opts acc))))
@@ -35,7 +33,6 @@
 
 (defn analysis-result
   [config]
-  (println "in " *ns* "/analysis-result!")
   (let [input-data (run-inputs config)]
     (analysis/analyze input-data config)))
 

@@ -46,7 +46,6 @@
 (defn resolve-rule-name
   "Resolve rule's name from rule NS."
   [rule-ns]
-  (println "in resolve-rule-name")
   @(utils/resolve-symbol 'rule-name rule-ns))
 
 
@@ -73,7 +72,6 @@
 
 (defn get-violations
   [id config file-paths t]
-  (println "in get-violations")
   (let [from-custom (run-custom-rules (-> config :custom-rules t)
                                       file-paths)
         from-pmd (pmd/violation-seq file-paths
@@ -90,8 +88,6 @@
   {:pre [(s/assert (s/coll-of ::specs/file-path) file-paths)
          (s/assert ::specs/config config)]
    :post [(s/assert ::specs/analysis-result %)]}
-  (println "in analyze")
-  (println "FILE PATHS ARE: " file-paths)
   (let [analysis-date (Date.)
         id (UUID/randomUUID)]
      {:analysis-time analysis-date
