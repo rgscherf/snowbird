@@ -16,7 +16,9 @@
                                     ::file-name]))
 (s/def ::filetype (s/and keyword? #{:apex :js}))
 (s/def ::file-name (s/and string? #(string/includes? % ".")))
-#_(s/def ::file-path string?)
+(s/def ::file-path (and string?
+                        #(or (string/includes? % "/")
+                             (string/includes? % "\\"))))
 (s/def ::analysis-id uuid?)
 (s/def ::line number?)
 
