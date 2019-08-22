@@ -9,7 +9,7 @@
             [snowbird.analysis.core :as analysis]))
 
 (s/check-asserts true)
-;(set! s/*explain-out* expound/printer)
+(set! s/*explain-out* expound/printer)
 
 (defn -main
   [& _]
@@ -17,6 +17,7 @@
 
 (defn run-inputs
   [config]
+  (println "in run-inputs!")
   (reduce (fn [acc [f-ns opts]]
             (let [input-fn (utils/resolve-symbol 'specify f-ns)]
               (concat acc (input-fn config opts))))
@@ -34,7 +35,9 @@
 
 (defn analysis-result
   [config]
-  (analysis/analyze (run-inputs config) config))
+  (println "in " *ns* "/analysis-result!")
+  (let [input-data (run-inputs config)]
+    (analysis/analyze input-data config)))
 
 (defn run-snowbird
   [config]
@@ -58,5 +61,9 @@
 
 (comment
   (let [testfiles (slurp "/Users/rgscherf/projects/snowbird/tech-debt-measurement/classes/Controller_ContactWorkOrderDisplay.cls")]
-      (run-snowbird-from-filemap {"Controller_ContactWorkOrderDisplay" testfiles})))
+      (run-snowbird-from-filemap {"Controller_ContactWorkOrderDisplay" testfiles}))
+
+  (def c (fs/read-default-config))
+
+  (run-snowbird c))
 

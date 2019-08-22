@@ -13,6 +13,7 @@
   "Get the default config file from resources dir and read it to a map."
   []
   {:post [(s/assert ::specs/config %)]}
+  (println "in read-default-config!")
   (-> "snowbird_config.edn" io/resource slurp edn/read-string))
 
 ;; filetypes are recorded in config as keywords.
@@ -50,7 +51,10 @@
 
 (defn pmd-xml->rule-names
   [xml-path]
+  ;; TODO: this fn assumes we're loading xml from the resource directory. need to work with other sources such as loading from JSON
+  (println "in pmd-xml->rule-names with path " xml-path)
   (let [in (xml/parse-str (-> xml-path io/resource slurp))]
+    (println in)
     (->> in
          (tree-seq #(-> % :content seq)
                    :content)

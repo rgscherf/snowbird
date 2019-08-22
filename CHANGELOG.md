@@ -1,6 +1,11 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
+
+## [0.2.13] - 2019-05.17
+### Changed
+- Fixed crash when passing empty vector of custom rule symbols to analyzer.
+
 ## [0.2.12] - 2019-05.17
 ### Added
 - `snowbird.render.summarize-tech-debt` ns, with options to render debt summary as string and/or print to stdout.

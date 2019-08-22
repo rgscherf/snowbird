@@ -1,4 +1,4 @@
-(defproject snowbird "0.2.12"
+(defproject snowbird "0.2.13"
   :description "Core library for configurable static analysis as a service (CSAAAS)."
   :url "http://example.com/FIXME"
   :license {:name "EPL-2.0 OR GPL-2.0-or-later WITH Classpath-exception-2.0"
@@ -7,8 +7,6 @@
                  [commons-io "2.6"]
                  [expound "0.7.2"]
                  [clj-http "3.9.1"]
-                 [dk.ative/docjure "1.12.0"]
-                 [com.draines/postal "2.0.3"]
                  [instaparse "1.4.10"]
                  [org.clojure/data.xml "0.0.8"]
                  [org.clojure/tools.cli "0.4.1"]

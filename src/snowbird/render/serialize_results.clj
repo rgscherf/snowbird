@@ -13,9 +13,9 @@
     render-instructions
     (merge {}
            (if (contains? render-instructions :data)
-               {::results (:results results)})
+               {::results results})
            (if (contains? render-instructions :file)
-               (do (write-to-file (:results results) destination-file)
+               (do (write-to-file results destination-file)
                    {::results-file destination-file})))))
 
 
