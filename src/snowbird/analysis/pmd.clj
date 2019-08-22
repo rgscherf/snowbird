@@ -79,6 +79,12 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; RUNNING PMD AND CLEANING OUTPUT
 
+(defn ->num
+  [maybe-num]
+  (if (number? maybe-num)
+    maybe-num
+    (Integer/parseInt maybe-num)))
+
 (defn violation-seq
   "Run PMD and return a seq of spec-conforming violation maps."
   [file-paths filetype config]
@@ -88,8 +94,10 @@
   (let [pmd-results (run-pmd file-paths filetype config)]
     (map #(-> %
               (assoc :file-name (utils/name-from-path (:file %)))
-              (assoc :file-path (:file %))
               (dissoc :file)
+              (update :line ->num)
+              (dissoc :problem)
+              (dissoc :priority)
               (dissoc :package))
          pmd-results)))
 

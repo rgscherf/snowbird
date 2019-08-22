@@ -38,8 +38,7 @@
                            (string/lower-case file-name)
                            "' does not match any allowed pattern.")
          :rule rule-name
-         :file-name file-name
-         :file-path file-path})))
+         :file-name file-name})))
 
 
 (defn run

@@ -16,7 +16,6 @@
        ft/strip-comments
        ft/break-numbered-lines
        (map (fn [[line-num line-txt]] {:line line-num
-                                       :file-path file-path
                                        :file-name (utils/name-from-path file-path)
                                        :rule rule-name
                                        :description (str " " (string/trim line-txt) " ")}))

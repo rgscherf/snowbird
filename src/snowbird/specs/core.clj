@@ -13,12 +13,12 @@
                                     ::analysis-id
                                     ::description
                                     ::rule
-                                    ::file-name
-                                    ::file-path]))
+                                    ::file-name]))
 (s/def ::filetype (s/and keyword? #{:apex :js}))
 (s/def ::file-name (s/and string? #(string/includes? % ".")))
-(s/def ::file-path string?)
+#_(s/def ::file-path string?)
 (s/def ::analysis-id uuid?)
+(s/def ::line number?)
 
 ;; config stuff
 (s/def ::config (s/keys :req-un [::file-types ::pmd-rules ::input ::render]

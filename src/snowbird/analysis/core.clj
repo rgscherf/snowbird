@@ -110,7 +110,6 @@
 
 (comment
   (do
-    (analyze files (fs/read-default-config))
-    (+ 1 1)))
+    (analyze files (fs/read-default-config))))
 
 
